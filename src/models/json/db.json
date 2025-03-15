@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "firstName": "Homer",
+      "lastName": "Simpson",
+      "email": "homer@simpson.com",
+      "password": "secret",
+      "_id": "95dfd60e-6b30-499d-bd4d-c133149f6d48"
+    },
+    {
+      "firstName": "Marge",
+      "lastName": "Simpson",
+      "email": "marge@simpson.com",
+      "password": "secret",
+      "_id": "18e973bd-5bcb-4dd9-8f46-1a87c2a72df0"
+    },
+    {
+      "firstName": "Bart",
+      "lastName": "Simpson",
+      "email": "bart@simpson.com",
+      "password": "secret",
+      "_id": "cb800698-781e-443c-b40e-6c47448118a1"
+    }
+  ],
+  "categories": [
+    {
+      "categoryName": "Natural Sights",
+      "_id": "b860b050-202f-436b-90cd-b8586bb3a215"
+    }
+  ],
+  "places": [
+    {
+      "name": "Apache",
+      "description": "Pizzeria",
+      "latitude": 15,
+      "longitude": 20,
+      "_id": "ad182c2d-d3ca-42f3-867d-61f1a3738f98",
+      "categoryId": "b860b050-202f-436b-90cd-b8586bb3a215"
+    },
+    {
+      "name": "McDonalds",
+      "description": "Fast Food Restaurant",
+      "latitude": 11,
+      "longitude": 20,
+      "_id": "92043775-48aa-4188-91d5-2394fbb0c67b",
+      "categoryId": "b860b050-202f-436b-90cd-b8586bb3a215"
+    },
+    {
+      "name": "Centra",
+      "description": "Convenience Store",
+      "latitude": 15,
+      "longitude": 21,
+      "_id": "99831bb3-2448-410a-9304-7f7cddacbbef",
+      "categoryId": "b860b050-202f-436b-90cd-b8586bb3a215"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<table class="table is-fullwidth">
+  <thead>
+    <tr>
+      <th>Place</th>
+      <th>Description</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each places}}
+      <tr>
+        <td>
+          {{name}}
+        </td>
+        <td>
+          {{description}}
+        </td>
+        <td>
+          {{latitude}}
+        </td>
+        <td>
+          {{longitude}}
+        </td>
+        <td>
+          <a id="delete-track" class="button" href="/category/{{categoryId}}/delete_place/{{_id}}">
+            <span class="icon is-small">
+              {{> delete-image}}
+            </span>
+          </a>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
