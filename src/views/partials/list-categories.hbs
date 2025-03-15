@@ -1,0 +1,17 @@
+{{#each categoriesToView}}
+  <div class="box box-link-hover-shadow">
+    <h2 class="title">
+      {{ categoryName }}
+    </h2>
+    <a id="open-list" class="button" href="/category/{{_id}}">
+      <span class="icon is-small">
+        {{> open-image}}
+      </span>
+    </a>
+    <a id="delete-list" class="button" href="/delete_category/{{_id}}">
+      <span class="icon is-small">
+        {{> delete-image}}
+      </span>
+    </a>
+  </div>
+{{/each}}
