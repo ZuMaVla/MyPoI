@@ -3,8 +3,8 @@
     <tr>
       <th>Place</th>
       <th>Description</th>
-      <th>Latitude</th>
-      <th>Longitude</th>
+      <th>Rating</th>
+      <th>My rating</th>
       <th></th>
     </tr>
   </thead>
@@ -12,16 +12,16 @@
     {{#each places}}
       <tr>
         <td>
-          {{name}}
+          {{this.name}}
         </td>
         <td>
-          {{description}}
+          {{this.description}}
         </td>
         <td>
-          {{latitude}}
+          {{this.averageRating}}
         </td>
         <td>
-          {{longitude}}
+          {{> vote}}
         </td>
         <td>
           <a id="open-place" class="button" href="/category/{{categoryId}}/place/{{_id}}">
@@ -29,7 +29,7 @@
               {{> open-image}}
             </span>
           </a>
-          <a id="delete-place" class="button" href="/category/{{categoryId}}/delete_place/{{_id}}">
+          <a id="delete-place" class="button is-hidden" href="/category/{{categoryId}}/delete_place/{{_id}}">
             <span class="icon is-small">
               {{> delete-image}}
             </span>

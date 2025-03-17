@@ -1,0 +1,13 @@
+<form class="box" action="/category/{{place.categoryId}}/place/{{place._id}}/requestdelete" method="POST">
+  <label class="label">Request deleting the PoI:</label>
+  <div class="field is-horizontal">
+    <div class="field-body">
+      <div class="field">
+        <textarea class="textarea" name="reason" placeholder="Provide reason to delete here" rows="2" cols="50"></textarea>
+      </div>
+      <div>
+        <button class="button is-danger" type="submit">Request delete</button>
+      </div>
+    </div>
+  </div>
+</form>

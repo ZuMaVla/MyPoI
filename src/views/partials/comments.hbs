@@ -1,0 +1,21 @@
+<div>
+  <table class="table is-fullwidth">
+    {{#each comments}}
+      <tr>
+        <td>
+          {{author}}
+          {{dateTime}}
+          <br>
+          {{comment}}
+        </td>
+        <td class="has-text-right">
+          <a id="delete-comment" class="button" href="/category/{{place.categoryId}}/place/{{place._id}}/deletecomment/{{_id}}">
+            <span class="icon is-small">
+              {{> delete-image}}
+            </span>
+          </a>
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+</div>

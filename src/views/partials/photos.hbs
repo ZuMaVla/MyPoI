@@ -1,0 +1,22 @@
+<table class="table is-fullwidth">
+  <tr>
+    <td>
+      <div id="photo-container">
+        {{#each place.photos}}
+          {{#if this.show}}
+            <img class="place-photo" src="{{this.link}}" alt="{{this.caption}}" style="display: none; height: 200px" />
+          {{/if}}
+        {{/each}}
+      </div>
+    </td>
+    <td class="has-text-right">
+      <button class="button is-primary mr-3" id="next-photo" style="display: none;">Next</button>
+    </td>
+  </tr>
+</table>
+
+<!--
+Adding all photos with "show"-flag true to the page but set display mode to "none".
+Images to be unhidden by one by a script in the place-view.hbs.
+Flag "show" to be approved by admin (not yet realised).
+-->

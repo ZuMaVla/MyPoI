@@ -1,8 +1,53 @@
 {{> menu}}
 
-<section class="section">
-  <div class="title">
+<section class="section pb-2 pt-2">
+  <div class="title mb-1">
     {{title}}
   </div>
-
+  <div class="mgt-small">
+    {{place.description}} <hr>
+  </div>
 </section>
+<section class="section pb-2 pt-2">
+  <div>
+    {{> add-photo}}
+    {{> photos}}
+  </div>
+</section>
+<section class="section pb-2 pt-2">
+  <div>
+    {{> add-comment}}
+    <section class="box">
+      <label class="title is-5">User comments:</label>
+      <hr class="mb-2">
+      {{> comments}}
+    </section>
+   
+  </div>
+</section>
+<section class="section pb-2 pt-2">
+  <div>
+    {{> request-delete}}
+  </div>
+</section>
+
+<!-- script for looping through the Place's photo array -->
+<script>
+  let currentPhoto = 0;
+  const photos = document.querySelectorAll(".place-photo");
+  const _button = document.getElementById("next-photo");
+
+  if (photos.length > 0) {
+    photos[0].style.display = "block";
+  }
+
+  if (photos.length > 1) {
+    _button.style.display = "inline-block";
+  }
+
+  _button.addEventListener("click", () => {
+    photos[currentPhoto].style.display = "none";
+    currentPhoto = (currentPhoto + 1) % photos.length;    // Add one each click, back to zero when photos.length is reached.
+    photos[currentPhoto].style.display = "block";
+  });
+</script>

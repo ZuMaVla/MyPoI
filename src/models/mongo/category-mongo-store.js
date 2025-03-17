@@ -13,6 +13,9 @@ export const categoryMongoStore = {
       const category = await Category.findOne({ _id: id }).lean();
       if (category) {
         category.places = await placeMongoStore.getPlacesByCategoryId(category._id);
+        if (category.places === null) {
+          category.places = [];
+        }
       }
       return category;
     }

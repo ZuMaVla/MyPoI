@@ -5,6 +5,23 @@ export const categoryController = {
   index: {
     handler: async function (request, h) {
       const category = await db.categoryStore.getCategoryById(request.params.id);
+
+      for (let i = 0; i < category.places.length; i++) {
+        const place = category.places[i];
+        const ratings = place.ratings || [];
+
+        let averageRating = 0;
+        if (ratings.length > 0) {
+          let sum = 0;
+          for (let j = 0; j < ratings.length; j++) {
+            sum += ratings[j].rating;
+          }
+          averageRating = (sum / ratings.length).toFixed(1);
+        }
+
+        place.averageRating = averageRating;
+      }
+
       const viewData = {
         title: category.categoryName,
         places: category.places,

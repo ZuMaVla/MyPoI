@@ -1,0 +1,16 @@
+<form class="box" action="/category/{{place.categoryId}}/place/{{place._id}}/addphoto" method="POST">
+  <label class="label">Give photo details:</label>
+  <div class="field is-horizontal">
+    <div class="field-body">
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter link to the photo (no upload available)" name="link" />
+      </div>
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter photo caption" name="caption" />
+      </div>
+    </div>
+    <div>
+      <button class="button is-primary ml-3">Add Photo</button>
+    </div>
+  </div>
+</form>

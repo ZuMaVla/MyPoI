@@ -5,7 +5,7 @@ export const dashboardController = {
   index: {
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
-      const categories = await db.categoryStore.getUserCategories(loggedInUser._id);
+      const categories = await db.categoryStore.getAllCategories();
       console.log(categories);
       const viewData = {
         title: "My Point of Interest Dashboard",
