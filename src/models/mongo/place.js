@@ -25,6 +25,11 @@ const placeSchema = new Schema({
     min: -10.5, // Min longitude for Ireland
     max: -5.5, // Max longitude for Ireland
   },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true, // No anonymous adding places allowed
+  },
   photos: {
     type: [
       {

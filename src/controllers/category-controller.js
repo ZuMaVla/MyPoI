@@ -40,11 +40,13 @@ export const categoryController = {
       },
     },
     handler: async function (request, h) {
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
       const newPlace = {
         name: request.payload.name,
         description: request.payload.description,
         latitude: Number(request.payload.latitude),
         longitude: Number(request.payload.longitude),
+        userId: currentUser._id,
       };
       await db.placeStore.addPlace(request.params.id, newPlace);
       return h.redirect("/category/" + request.params.id);

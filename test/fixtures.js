@@ -30,15 +30,15 @@ export const nature = {
   categoryName: "Natural Sights",
 };
 
-export const FourStars = {
-  name: "Violin Concerto No. 3",
-  description: "Mozart",
-  latitude: 15,
-  longitude: 20,
+export const fourStars = {
+  name: "Four Star Pizza",
+  description: "Restaurant",
+  latitude: 54,
+  longitude: -6,
 };
 
-export const services = {
-  categoryName: "Natural Sights",
+export const food = {
+  categoryName: "Food",
 };
 
 export const testCategories = [
@@ -57,19 +57,19 @@ export const testPlaces = [
   {
     name: "Apache",
     description: "Pizzeria",
-    latitude: 15,
-    longitude: 20,
+    latitude: 53,
+    longitude: -7,
   },
   {
     name: "McDonalds",
     description: "Fast Food Restaurant",
-    latitude: 11,
-    longitude: 20,
+    latitude: 53,
+    longitude: -7,
   },
   {
     name: "Centra",
     description: "Convenience Store",
-    latitude: 15,
-    longitude: 21,
+    latitude: 53,
+    longitude: -8,
   },
 ];

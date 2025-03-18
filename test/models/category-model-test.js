@@ -1,16 +1,27 @@
 import { assert } from "chai";
 import { assertSubset } from "../test-utils.js";
 import { db } from "../../src/models/db.js";
-import { testCategories, nature } from "../fixtures.js";
-import { EventEmitter } from "events";
-
-EventEmitter.setMaxListeners(25);
+import { testCategories, nature, maggie } from "../fixtures.js";
 
 suite("Category Model tests", () => {
-  setup(async () => {
+  let existingCategories; // Variable to save existing categories from DB before testing
+  let defaultUser; // Creating variable for a default user on behalf of which all tests will be run
+
+  suiteSetup(async () => {
+    // Initialisation subroutine (once before all tests)
     db.init("mongo");
+    existingCategories = await db.categoryStore.getAllCategories(); // Saving existing DB content (categories) to the variable
+    defaultUser = await db.userStore.addUser(maggie);
+    nature.userId = defaultUser._id;
+    for (let i = 0; i < testCategories.length; i++) {
+      testCategories[i].userId = defaultUser._id;
+    }
+  });
+
+  setup(async () => {
+    // Reset suroutine (before each test)
     await db.categoryStore.deleteAllCategories();
-    for (let i = 0; i < testCategories.length; i += 1) {
+    for (let i = 0; i < testCategories.length; i++) {
       // eslint-disable-next-line no-await-in-loop
       testCategories[i] = await db.categoryStore.addCategory(testCategories[i]);
     }
@@ -24,7 +35,7 @@ suite("Category Model tests", () => {
 
   test("delete all categories", async () => {
     let returnedCategories = await db.categoryStore.getAllCategories();
-    assert.equal(returnedCategories.length, 3);
+    assert.equal(returnedCategories.length, testCategories.length);
     await db.categoryStore.deleteAllCategories();
     returnedCategories = await db.categoryStore.getAllCategories();
     assert.equal(returnedCategories.length, 0);
@@ -33,7 +44,7 @@ suite("Category Model tests", () => {
   test("get a category - success", async () => {
     const category = await db.categoryStore.addCategory(nature);
     const returnedCategory = await db.categoryStore.getCategoryById(category._id);
-    assertSubset(nature, category);
+    assertSubset(nature, returnedCategory);
   });
 
   test("delete One Category - success", async () => {
@@ -54,5 +65,15 @@ suite("Category Model tests", () => {
     await db.categoryStore.deleteCategoryById("bad-id");
     const allCategories = await db.categoryStore.getAllCategories();
     assert.equal(testCategories.length, allCategories.length);
+  });
+
+  suiteTeardown(async () => {
+    // Restore original data after all tests
+    await db.categoryStore.deleteAllCategories();
+    await db.userStore.deleteUserById(defaultUser._id);
+    for (const category of existingCategories) {
+      await db.categoryStore.addCategory(category);
+    }
+    db.close();
   });
 });

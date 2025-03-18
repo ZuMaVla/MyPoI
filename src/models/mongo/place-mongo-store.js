@@ -42,4 +42,23 @@ export const placeMongoStore = {
   async updatePlace(place, updatedPlace) {
     await Place.updateOne({ _id: place._id }, updatedPlace);
   },
+
+  async addRating(user, place, rating) {
+    const ratings = place.ratings;
+    if (ratings.length === 0) {
+      place.ratings.push({ rating: rating, userId: user._id });
+    } else {
+      let newRating = true;
+      for (let i = 0; i < ratings.length; i++) {
+        if (ratings[i].userId.toString() === user._id.toString()) {
+          newRating = false;
+          ratings[i].rating = rating;
+        }
+      }
+      if (newRating) {
+        place.ratings.push({ rating: rating, userId: user._id });
+      }
+    }
+    await this.updatePlace(place, place);
+  },
 };

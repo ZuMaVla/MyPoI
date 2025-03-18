@@ -69,23 +69,8 @@ export const placeController = {
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
-      const ratings = currentPlace.ratings;
-      if (ratings.length === 0) {
-        currentPlace.ratings.push({ rating: request.payload.vote, userId: currentUser._id });
-      } else {
-        let newRating = true;
-        for (let i = 0; i < ratings.length; i++) {
-          if (ratings[i].userId.toString() === currentUser._id.toString()) {
-            newRating = false;
-            ratings[i].rating = request.payload.vote;
-          }
-        }
-        if (newRating) {
-          currentPlace.ratings.push({ rating: request.payload.vote, userId: currentUser._id });
-        }
-      }
-
-      await db.placeStore.updatePlace(currentPlace, currentPlace);
+      const rating = request.payload.vote;
+      db.placeStore.addRating(currentUser, currentPlace, rating);
       return h.redirect("/category/" + request.params.categoryId);
     },
   },
@@ -103,7 +88,7 @@ export const placeController = {
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
       currentPlace.deleteRequests.push({ reason: request.payload.reason, userId: currentUser._id });
       await db.placeStore.updatePlace(currentPlace, currentPlace);
-      return h.redirect("/category/" + request.params.categoryId + "/place/" + request.params.id);
+      return h.redirect("/category/" + currentPlace.categoryId + "/place/" + currentPlace._id);
     },
   },
 };

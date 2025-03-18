@@ -30,14 +30,14 @@ export const dashboardController = {
         userId: loggedInUser._id,
         categoryName: request.payload.categoryName,
       };
-      await db.placeStore.addCategory(newCategory);
+      await db.categoryStore.addCategory(newCategory);
       return h.redirect("/dashboard");
     },
   },
 
   deleteCategory: {
     handler: async function (request, h) {
-      await db.placeStore.deleteCategoryById(request.params.id);
+      await db.categoryStore.deleteCategoryById(request.params.id);
       return h.redirect("/dashboard");
     },
   },

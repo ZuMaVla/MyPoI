@@ -4,7 +4,7 @@ import { placeMemStore } from "./mem/place-mem-store.js";
 import { userJsonStore } from "./json/user-json-store.js";
 import { categoryJsonStore } from "./json/category-json-store.js";
 import { placeJsonStore } from "./json/place-json-store.js";
-import { connectMongo } from "./mongo/connect.js";
+import { connectMongo, disconnectMongo } from "./mongo/connect.js";
 import { userMongoStore } from "./mongo/user-mongo-store.js";
 import { categoryMongoStore } from "./mongo/category-mongo-store.js";
 import { placeMongoStore } from "./mongo/place-mongo-store.js";
@@ -31,6 +31,12 @@ export const db = {
         this.userStore = userMemStore;
         this.categoryStore = categoryMemStore;
         this.placeStore = placeMemStore;
+    }
+  },
+
+  async close() {
+    if (storeType === "mongo") {
+      await disconnectMongo();
     }
   },
 };

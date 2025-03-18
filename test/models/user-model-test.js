@@ -4,10 +4,17 @@ import { maggie, testUsers } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
 
 suite("User Model tests", () => {
-  setup(async () => {
+  let existingUsers; // Variable to save existing users from DB before testing
+
+  suiteSetup(async () => {
+    // Initialisation subroutine (once before all tests)
     db.init("mongo");
+    existingUsers = await db.userStore.getAllUsers(); // Saving existing DB content (users) to the variable
+  });
+
+  setup(async () => {
     await db.userStore.deleteAll();
-    for (let i = 0; i < testUsers.length; i += 1) {
+    for (let i = 0; i < testUsers.length; i++) {
       // eslint-disable-next-line no-await-in-loop
       testUsers[i] = await db.userStore.addUser(testUsers[i]);
     }
@@ -20,7 +27,7 @@ suite("User Model tests", () => {
 
   test("delete all users", async () => {
     let returnedUsers = await db.userStore.getAllUsers();
-    assert.equal(returnedUsers.length, 3);
+    assert.equal(returnedUsers.length, testUsers.length);
     await db.userStore.deleteAll();
     returnedUsers = await db.userStore.getAllUsers();
     assert.equal(returnedUsers.length, 0);
@@ -44,6 +51,7 @@ suite("User Model tests", () => {
 
   test("get a user - bad params", async () => {
     assert.isNull(await db.userStore.getUserByEmail(""));
+    assert.isNull(await db.userStore.getUserByEmail());
     assert.isNull(await db.userStore.getUserById(""));
     assert.isNull(await db.userStore.getUserById());
   });
@@ -52,5 +60,14 @@ suite("User Model tests", () => {
     await db.userStore.deleteUserById("bad-id");
     const allUsers = await db.userStore.getAllUsers();
     assert.equal(testUsers.length, allUsers.length);
+  });
+
+  suiteTeardown(async () => {
+    // Restore original data after all tests
+    await db.userStore.deleteAll();
+    for (const user of existingUsers) {
+      await db.userStore.addUser(user);
+    }
+    db.close();
   });
 });

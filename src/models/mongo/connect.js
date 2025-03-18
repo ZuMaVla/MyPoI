@@ -20,3 +20,7 @@ export function connectMongo() {
     console.log(`database connected to ${this.name} on ${this.host}`);
   });
 }
+
+export function disconnectMongo() {
+  return Mongoose.disconnect(); // returns a Promise
+}
