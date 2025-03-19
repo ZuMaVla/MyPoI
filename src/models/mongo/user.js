@@ -25,5 +25,9 @@ const userSchema = new Schema({
     required: true,
     minlength: 4,
   },
+  admin: {
+    type: Boolean,
+    required: false,
+  },
 });
 export const User = Mongoose.model("User", userSchema);
