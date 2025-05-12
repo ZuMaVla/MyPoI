@@ -5,6 +5,8 @@ import { userApi } from "./api/user-api.js";
 export const apiRoutes = [
   { method: "POST", path: "/api/users/authenticate", config: userApi.authenticate },
 
+  { method: "GET", path: "/api/users_connected", config: userApi.reportStat }, // to report amount of currently connected users
+
   { method: "POST", path: "/api/users", config: userApi.create },
   { method: "GET", path: "/api/users/{id}", config: userApi.findOne },
   { method: "GET", path: "/api/users", config: userApi.find },

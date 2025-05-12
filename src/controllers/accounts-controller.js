@@ -1,11 +1,18 @@
 import { db } from "../models/db.js";
 import { UserSpec, UserCredentialsSpec } from "../models/joi-schemas.js";
+import fs from "fs";
 
 export const accountsController = {
   index: {
     auth: false,
     handler: function (request, h) {
-      return h.view("main", { title: "Welcome to MyPoI " });
+      const serverId = fs.readFileSync("../../server_id.txt", "utf8").trim();
+      const viewData = {
+        serverId: serverId,
+        title: "Welcome to MyPoI",
+      };
+      return h.view("main", viewData);
+      //return h.view("main", { title: "Welcome to MyPoI " });
     },
   },
   showSignup: {
@@ -51,6 +58,7 @@ export const accountsController = {
         return h.redirect("/");
       }
       request.cookieAuth.set({ id: user._id });
+      db.userCount += 1; // To document the amount of users logged in
       return h.redirect("/dashboard");
     },
   },
@@ -58,6 +66,7 @@ export const accountsController = {
     auth: false,
     handler: function (request, h) {
       request.cookieAuth.clear();
+      db.userCount -= 1; // To document the amount of users logged in
       return h.redirect("/");
     },
   },

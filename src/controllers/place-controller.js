@@ -58,6 +58,25 @@ export const placeController = {
     },
   },
 
+  editComment: {
+    validate: {
+      payload: CommentSpec,
+      options: { abortEarly: false },
+      failAction: function (request, h, error) {
+        return h.view("place-view", { title: "Add comment error", errors: error.details }).takeover().code(400);
+      },
+    },
+    handler: async function (request, h) {
+      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      const commentToEdit = currentPlace.comments._id;
+
+      currentPlace.comments.push({ comment: request.payload.comment, userId: currentUser._id });
+      await db.placeStore.updatePlace(currentPlace, currentPlace);
+      return h.redirect("/category/" + request.params.categoryId + "/place/" + request.params.id);
+    },
+  },
+
   addVote: {
     validate: {
       payload: VoteSpec,

@@ -21,6 +21,7 @@ export const webRoutes = [
   { method: "GET", path: "/category/{categoryId}/delete_place/{id}", config: categoryController.deletePlace },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addphoto", config: placeController.addPhoto },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addcomment", config: placeController.addComment },
+  { method: "POST", path: "/category/{categoryId}/place/{id}/editcomment", config: placeController.editComment },
   { method: "POST", path: "/category/{categoryId}/place/{id}/requestdelete", config: placeController.requestDeletePlace },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addvote", config: placeController.addVote },
 ];

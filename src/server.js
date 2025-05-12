@@ -16,7 +16,7 @@ import { validate } from "./api/jwt-utils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function init() {
+export async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
     host: "localhost",
@@ -62,6 +62,7 @@ async function init() {
   server.route(apiRoutes);
   await server.start();
   console.log("Server running on %s", server.info.uri);
+  return server;
 }
 
 process.on("unhandledRejection", (err) => {
@@ -75,4 +76,7 @@ if (result.error) {
   process.exit(1);
 }
 
-init();
+if (process.env.NODE_ENV !== "test") {
+  // Only run the server if NOT in test mode
+  init();
+}

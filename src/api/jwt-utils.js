@@ -35,3 +35,8 @@ export async function validate(decoded, request) {
   }
   return { isValid: true, credentials: user };
 }
+
+export async function isAdmin(email) {
+  const user = await db.userStore.getUserByEmail(email);
+  return user.admin === true;
+}

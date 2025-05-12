@@ -13,6 +13,7 @@ export const db = {
   userStore: null,
   categoryStore: null,
   placeStore: null,
+  userCount: 0, // To document the amount of users logged in
 
   init(storeType) {
     switch (storeType) {
@@ -35,7 +36,7 @@ export const db = {
   },
 
   async close() {
-    if (storeType === "mongo") {
+    if (db.storeType === "mongo") {
       await disconnectMongo();
     }
   },

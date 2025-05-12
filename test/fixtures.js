@@ -11,6 +11,7 @@ export const testUsers = [
     lastName: "Simpson",
     email: "homer@simpson.com",
     password: "secret",
+    admin: true,
   },
   {
     firstName: "Marge",

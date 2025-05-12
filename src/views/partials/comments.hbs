@@ -9,6 +9,11 @@
           {{comment}}
         </td>
         <td class="has-text-right">
+          <a id="delete-comment" class="button" href="/category/{{place.categoryId}}/place/{{place._id}}/editcomment/{{_id}}">
+            <span class="icon is-small">
+              {{> edit-image}}
+            </span>
+          </a>
           <a id="delete-comment" class="button" href="/category/{{place.categoryId}}/place/{{place._id}}/deletecomment/{{_id}}">
             <span class="icon is-small">
               {{> delete-image}}
