@@ -1,25 +1,24 @@
 <div>
   <table class="table is-fullwidth">
     {{#each comments}}
-      <tr>
+      <tr style="vertical-align: top; border-top: 1px solid #dbdbdb;">
         <td>
-          {{author}}
-          {{dateTime}}
-          <br>
-          {{comment}}
+          {{author}} {{dateTime}}<br>
+          <p style="white-space: pre-line;">{{comment}}</p>
         </td>
+
+        {{#if (eq userIdStr ../user._idStr)}}
         <td class="has-text-right">
-          <a id="delete-comment" class="button" href="/category/{{place.categoryId}}/place/{{place._id}}/editcomment/{{_id}}">
-            <span class="icon is-small">
-              {{> edit-image}}
-            </span>
-          </a>
-          <a id="delete-comment" class="button" href="/category/{{place.categoryId}}/place/{{place._id}}/deletecomment/{{_id}}">
-            <span class="icon is-small">
-              {{> delete-image}}
-            </span>
-          </a>
+          <p class="has-text-right">
+            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/editcomment/{{_id}}">
+              <span class="icon is-small">{{> edit-image}}</span>
+            </a>
+            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/deletecomment/{{_id}}">
+              <span class="icon is-small">{{> delete-image}}</span>
+            </a>
+          </p>
         </td>
+        {{/if}}
       </tr>
     {{/each}}
   </table>

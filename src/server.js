@@ -57,6 +57,7 @@ export async function init() {
     layout: true,
     isCached: false,
   });
+  Handlebars.registerHelper("eq", (a, b) => a === b);
   db.init("mongo");
   server.route(webRoutes);
   server.route(apiRoutes);

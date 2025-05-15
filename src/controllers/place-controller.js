@@ -5,6 +5,8 @@ export const placeController = {
   index: {
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      currentUser._idStr = currentUser._id.toString();
       let placeComments = currentPlace.comments;
       let i, _user;
       const commentCount = placeComments.length;
@@ -14,13 +16,16 @@ export const placeController = {
           placeComments[i].author = _user.firstName + " " + _user.lastName;
           placeComments[i].dateTime =
             "[" + placeComments[i].commentDate.toLocaleString("en-IE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + "]";
+          placeComments[i].userIdStr = placeComments[i].userId.toString();
         }
       }
       const viewData = {
+        user: currentUser,
         title: currentPlace.name,
         place: currentPlace,
         comments: placeComments,
       };
+      console.log(viewData);
       return h.view("place-view", viewData);
     },
   },
@@ -59,6 +64,37 @@ export const placeController = {
   },
 
   editComment: {
+    handler: async function (request, h) {
+      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+
+      let textComment = null;
+
+      for (let i = 0; i < currentPlace.comments.length; i++) {
+        if (currentPlace.comments[i]._id.toString() === request.params.commentId) {
+          textComment = currentPlace.comments[i].comment;
+          break;
+        }
+      }
+
+      if (!textComment) {
+        return h.view("error-view", {
+          message: "Comment not found",
+        });
+      }
+
+      const viewData = {
+        title: `${currentPlace.name} - Editing comment`,
+        text: textComment,
+        categoryId: request.params.categoryId,
+        placeId: request.params.id,
+        commentId: request.params.commentId,
+      };
+
+      return h.view("comment-view", viewData);
+    },
+  },
+
+  replaceComment: {
     validate: {
       payload: CommentSpec,
       options: { abortEarly: false },
@@ -67,13 +103,54 @@ export const placeController = {
       },
     },
     handler: async function (request, h) {
-      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const commentId = request.params.commentId;
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
-      const commentToEdit = currentPlace.comments._id;
+      const editorName = currentUser.firstName + " " + currentUser.lastName;
+      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const dateStamp = new Date()
+        .toLocaleString("en-IE", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+        .replace(",", "");
+      const timeStamp = new Date()
+        .toLocaleString("en-IE", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+        .replace(",", "");
 
-      currentPlace.comments.push({ comment: request.payload.comment, userId: currentUser._id });
+      let editedComment = request.payload.comment;
+
+      // Send back if the edited comment is empty
+      if (!editedComment || !editedComment.trim()) {
+        return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}/editcomment/${commentId}`);
+      }
+
+      editedComment += `\n_______________________________________\n Edited by ${editorName} on ${dateStamp} at ${timeStamp}`;
+
+      for (let i = 0; i < currentPlace.comments.length; i++) {
+        if (currentPlace.comments[i]._id.toString() === commentId) {
+          currentPlace.comments[i].comment = editedComment;
+          break;
+        }
+      }
+
       await db.placeStore.updatePlace(currentPlace, currentPlace);
-      return h.redirect("/category/" + request.params.categoryId + "/place/" + request.params.id);
+
+      return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}`);
+    },
+  },
+
+  deleteComment: {
+    handler: async function (request, h) {
+      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const commentId = request.params.commentId;
+      currentPlace.comments = currentPlace.comments.filter((comment) => comment._id.toString() !== commentId);
+      await db.placeStore.updatePlace(currentPlace, currentPlace);
+      return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}`);
     },
   },
 

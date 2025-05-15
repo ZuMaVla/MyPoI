@@ -1,0 +1,26 @@
+<tr>
+  <td>
+    {{author}}
+    {{dateTime}}
+    <br />
+
+    <form method="POST" action="/category/{{categoryId}}/place/{{placeId}}/editcomment/{{commentId}}">
+      <div class="field">
+        <label class="label">Comment</label>
+        <div class="control">
+          <textarea class="textarea" name="comment" required>{{text}}</textarea>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-primary" type="submit">Submit</button>
+        </div>
+        <div class="control">
+          <a class="button is-light" href="/category/{{categoryId}}/place/{{placeId}}">Cancel</a>
+        </div>
+      </div>
+    </form>
+
+  </td>
+</tr>
