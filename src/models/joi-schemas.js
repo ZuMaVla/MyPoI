@@ -34,6 +34,7 @@ export const PlaceSpec = {
   description: Joi.string().required(),
   latitude: Joi.number().allow("").optional(),
   longitude: Joi.number().allow("").optional(),
+  _private: Joi.boolean().optional(),
 };
 
 export const VoteSpec = {

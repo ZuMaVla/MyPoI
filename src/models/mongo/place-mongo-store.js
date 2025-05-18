@@ -19,12 +19,22 @@ export const placeMongoStore = {
     return places;
   },
 
+  async getPublicPlacesByCategoryId(id) {
+    const publicPlaces = await Place.find({ categoryId: id, $or: [{ _private: { $exists: false } }, { _private: false }] }).lean();
+    return publicPlaces;
+  },
+
   async getPlaceById(id) {
     if (Mongoose.isValidObjectId(id)) {
       const place = await Place.findOne({ _id: id }).lean();
       return place;
     }
     return null;
+  },
+
+  async getPrivatePlacesByUserIdByCategoryId(userId, categoryId) {
+    const privatePlaces = await Place.find({ categoryId: categoryId, userId: userId, _private: { $exists: true } }).lean();
+    return privatePlaces;
   },
 
   async deletePlace(id) {

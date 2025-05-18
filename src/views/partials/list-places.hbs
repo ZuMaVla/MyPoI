@@ -9,7 +9,44 @@
     </tr>
   </thead>
   <tbody>
-    {{#each places}}
+    {{#each privatePlaces}}
+      <tr>
+        <td>
+          {{this.name}}
+        </td>
+        <td>
+          {{this.description}}
+        </td>
+        <td>
+          {{this.averageRating}}
+        </td>
+        <td>
+          {{> vote}}
+        </td>
+        <td>
+          <a id="private-place" class="button" href="/category/{{categoryId}}/place/{{_id}}">
+            <span class="icon is-small">
+              {{#if (eq this._private true)}}
+                {{> locked-image}}
+              {{else}}
+                {{> unlocked-image}}
+              {{/if}}
+            </span>
+          </a>
+          <a id="open-place" class="button" href="/category/{{categoryId}}/place/{{_id}}">
+            <span class="icon is-small">
+              {{> open-image}}
+            </span>
+          </a>
+          <a id="delete-place" class="button is-hidden" href="/category/{{categoryId}}/delete_place/{{_id}}">
+            <span class="icon is-small">
+              {{> delete-image}}
+            </span>
+          </a>
+        </td>
+      </tr>
+    {{/each}}    
+    {{#each publicPlaces}}
       <tr>
         <td>
           {{this.name}}
