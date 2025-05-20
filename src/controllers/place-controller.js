@@ -46,6 +46,18 @@ export const placeController = {
     },
   },
 
+  togglePrivacy: {
+    handler: async function (request, h) {
+      const currentPlace = await db.placeStore.getPlaceById(request.params.id);
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      if (currentUser._id.toString() === currentPlace.userId.toString() || currentUser.admin === true) {
+        currentPlace._private = !currentPlace._private;
+        await db.placeStore.updatePlace(currentPlace, currentPlace);
+      }
+      return h.redirect("/category/" + request.params.categoryId);
+    },
+  },
+
   addComment: {
     validate: {
       payload: CommentSpec,

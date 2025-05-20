@@ -11,9 +11,12 @@ export const categoryController = {
       let publicPlaces = [];
 
       if (currentUser.admin) {
-        publicPlaces = categoty.places.filter((place) => !privatePlaces.some((privatePlace) => privatePlace._id.toString() === place._id.toString()));
+        // For admins, all places of a category are considered "public", except those private to the admin
+        publicPlaces = category.places.filter((place) => !privatePlaces.some((privatePlace) => privatePlace._id.toString() === place._id.toString()));
       } else {
+        // For normal users, only public places are considered "public", except those private to the user
         publicPlaces = await db.placeStore.getPublicPlacesByCategoryId(category._id);
+        publicPlaces = publicPlaces.filter((place) => !privatePlaces.some((privatePlace) => privatePlace._id.toString() === place._id.toString()));
       }
 
       for (let i = 0; i < privatePlaces.length; i++) {

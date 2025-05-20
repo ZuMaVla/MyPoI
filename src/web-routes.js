@@ -20,6 +20,7 @@ export const webRoutes = [
   { method: "GET", path: "/category/{categoryId}/place/{id}", config: placeController.index },
   { method: "GET", path: "/category/{categoryId}/delete_place/{id}", config: categoryController.deletePlace },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addphoto", config: placeController.addPhoto },
+  { method: "GET", path: "/category/{categoryId}/place/{id}/toggleprivacy", config: placeController.togglePrivacy },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addcomment", config: placeController.addComment },
   { method: "GET", path: "/category/{categoryId}/place/{id}/editcomment/{commentId}", config: placeController.editComment },
   { method: "POST", path: "/category/{categoryId}/place/{id}/editcomment/{commentId}", config: placeController.replaceComment },
