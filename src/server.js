@@ -71,10 +71,11 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
-if (result.error) {
-  console.log(result.error.message);
-  process.exit(1);
+if (process.env.NODE_ENV !== "production") {
+  const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
+  if (result.error) {
+    console.log("Warning: .env file not found.");
+  }
 }
 
 if (process.env.NODE_ENV !== "test") {
