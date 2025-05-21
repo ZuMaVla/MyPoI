@@ -1,5 +1,6 @@
 import { db } from "../models/db.js";
 import { CommentSpec, PhotoSpec, RequestDeletePlaceSpec, VoteSpec } from "../models/joi-schemas.js";
+import sanitizeHtml from "sanitize-html";
 
 export const placeController = {
   index: {
@@ -69,7 +70,13 @@ export const placeController = {
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
-      currentPlace.comments.push({ comment: request.payload.comment, userId: currentUser._id });
+      const sanitizedComment = sanitizeHtml(request.payload.comment, {
+        allowedTags: ["b", "i"],
+        allowedAttributes: {},
+      });
+      currentPlace.comments.push({ comment: sanitizedComment, userId: currentUser._id });
+      //currentPlace.comments.push({ comment: request.payload.comment, userId: currentUser._id }); not sanitised comment
+
       await db.placeStore.updatePlace(currentPlace, currentPlace);
       return h.redirect("/category/" + request.params.categoryId + "/place/" + request.params.id);
     },
@@ -134,7 +141,10 @@ export const placeController = {
         })
         .replace(",", "");
 
-      let editedComment = request.payload.comment;
+      let editedComment = sanitizeHtml(request.payload.comment, {
+        allowedTags: ["b", "i"],
+        allowedAttributes: {},
+      });
 
       // Send back if the edited comment is empty
       if (!editedComment || !editedComment.trim()) {

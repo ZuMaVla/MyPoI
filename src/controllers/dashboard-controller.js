@@ -1,5 +1,6 @@
 import { db } from "../models/db.js";
 import { CategorySpec } from "../models/joi-schemas.js";
+import sanitizeHtml from "sanitize-html";
 
 export const dashboardController = {
   index: {
@@ -26,10 +27,20 @@ export const dashboardController = {
     },
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
+
+      const cleanCategoryName = sanitizeHtml(request.payload.categoryName, {
+        allowedTags: [],
+        allowedAttributes: {},
+      });
       const newCategory = {
         userId: loggedInUser._id,
-        categoryName: request.payload.categoryName,
+        categoryName: cleanCategoryName,
       };
+
+      //  const newCategory = {
+      //    userId: loggedInUser._id,
+      //    categoryName: request.payload.categoryName,
+      //  };
       await db.categoryStore.addCategory(newCategory);
       return h.redirect("/dashboard");
     },

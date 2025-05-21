@@ -71,7 +71,7 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-const result = dotenv.config();
+const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
 if (result.error) {
   console.log(result.error.message);
   process.exit(1);
