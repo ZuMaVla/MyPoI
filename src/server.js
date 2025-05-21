@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 export async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: "localhost",
+    host: "0.0.0.0",
   });
   await server.register(Vision);
   await server.register(Cookie);
