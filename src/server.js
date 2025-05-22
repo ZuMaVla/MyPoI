@@ -54,7 +54,7 @@ export async function init() {
     path: "./views",
     layoutPath: "./views/layouts",
     partialsPath: "./views/partials",
-    layout: true,
+    layout: "layout",
     isCached: false,
   });
   Handlebars.registerHelper("eq", (a, b) => a === b);
