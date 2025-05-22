@@ -12,15 +12,14 @@ import { accountsController } from "./controllers/accounts-controller.js";
 import dotenv from "dotenv";
 import Joi from "joi";
 import { validate } from "./api/jwt-utils.js";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let _host = "0.0.0.0";
 
 export async function init() {
-  const server = Hapi.server({
-    port: process.env.PORT || 3000,
-    host: "0.0.0.0",
-  });
+  const server = Hapi.server({ port: process.env.PORT || 3000, host: _host });
   await server.register(Vision);
   await server.register(Cookie);
   await server.register(HapiAuthJwt2);
@@ -59,10 +58,13 @@ export async function init() {
   });
   Handlebars.registerHelper("eq", (a, b) => a === b);
   db.init("mongo");
+  const layoutFullPath = path.resolve(__dirname, "./views/layouts/layout.hbs");
+  console.log("Does layout exist on Render?", fs.existsSync(layoutFullPath));
   server.route(webRoutes);
   server.route(apiRoutes);
   await server.start();
   console.log("Server running on %s", server.info.uri);
+  console.log("Views directory:", path.resolve(__dirname, "./views/layouts"));
   return server;
 }
 
@@ -73,6 +75,8 @@ process.on("unhandledRejection", (err) => {
 
 if (process.env.NODE_ENV !== "production") {
   const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
+  _host = "localhost";
+
   if (result.error) {
     console.log("Warning: .env file not found.");
   }
