@@ -59,7 +59,17 @@ export async function init() {
   Handlebars.registerHelper("eq", (a, b) => a === b);
   db.init("mongo");
   const layoutFullPath = path.resolve(__dirname, "./views/layouts/layout.hbs");
+
   console.log("Does layout exist on Render?", fs.existsSync(layoutFullPath));
+
+  server.ext("onPreResponse", (request, h) => {
+    const response = request.response;
+    if (response.isBoom) {
+      console.error("500 ERROR:", response.stack || response.message);
+    }
+    return h.continue;
+  });
+
   server.route(webRoutes);
   server.route(apiRoutes);
   await server.start();
