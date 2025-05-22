@@ -7,7 +7,7 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "pwd && ls -lah && ls -lah src && ls -lah src/views && node src/server.js",
     "lint": "./node_modules/.bin/eslint . --ext .js",
     "test": "cross-env NODE_ENV=test c8 mocha --ui tdd test/**/*.js --exit"
   },
