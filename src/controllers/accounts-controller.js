@@ -7,7 +7,7 @@ export const accountsController = {
   index: {
     auth: false,
     handler: function (request, h) {
-      const serverId = fs.readFileSync("../../server_id.txt", "utf8").trim();
+      const serverId = fs.readFileSync("./server_id.txt", "utf8").trim();
       const viewData = {
         serverId: serverId,
         title: "Welcome to MyPoI",
