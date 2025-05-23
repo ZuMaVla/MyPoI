@@ -14,6 +14,11 @@ export const placeController = {
       if (commentCount > 0) {
         for (i = 0; i < commentCount; i++) {
           _user = await db.userStore.getUserById(placeComments[i].userId);
+          if (!_user) {
+            _user = {};
+            _user.firstName = "Deleted";
+            _user.lastName = "user";
+          }
           placeComments[i].author = _user.firstName + " " + _user.lastName;
           placeComments[i].dateTime =
             "[" + placeComments[i].commentDate.toLocaleString("en-IE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + "]";
