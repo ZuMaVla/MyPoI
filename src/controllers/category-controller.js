@@ -5,6 +5,8 @@ export const categoryController = {
   index: {
     handler: async function (request, h) {
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      console.log("Inside dashboard; user: ");
+      console.log(currentUser);
       const category = await db.categoryStore.getCategoryById(request.params.id);
       const privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
 

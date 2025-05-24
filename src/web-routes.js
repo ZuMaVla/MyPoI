@@ -11,6 +11,7 @@ export const webRoutes = [
   { method: "GET", path: "/logout", config: accountsController.logout },
   { method: "POST", path: "/register", config: accountsController.signup },
   { method: "POST", path: "/authenticate", config: accountsController.login },
+  { method: ["GET", "POST"], path: "/oauth2/redirect/google", config: accountsController.googleLogin },
   { method: "GET", path: "/about", config: aboutController.index },
   { method: "GET", path: "/dashboard", config: dashboardController.index },
   { method: "POST", path: "/dashboard/addcategory", config: dashboardController.addCategory },

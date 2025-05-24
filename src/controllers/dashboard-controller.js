@@ -4,8 +4,10 @@ import sanitizeHtml from "sanitize-html";
 
 export const dashboardController = {
   index: {
+    auth: "session",
     handler: async function (request, h) {
       const loggedInUser = request.auth.credentials;
+      console.log("Inside dashboard-controller: ", loggedInUser);
       const categories = await db.categoryStore.getAllCategories();
       console.log(categories);
       const viewData = {

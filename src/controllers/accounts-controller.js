@@ -16,12 +16,14 @@ export const accountsController = {
       //return h.view("main", { title: "Welcome to MyPoI " });
     },
   },
+
   showSignup: {
     auth: false,
     handler: function (request, h) {
       return h.view("signup-view", { title: "Sign up for MyPoI" });
     },
   },
+
   signup: {
     auth: false,
     validate: {
@@ -39,12 +41,14 @@ export const accountsController = {
       return h.redirect("/");
     },
   },
+
   showLogin: {
     auth: false,
     handler: function (request, h) {
       return h.view("login-view", { title: "Login to MyPoI" });
     },
   },
+
   login: {
     auth: false,
     validate: {
@@ -61,11 +65,69 @@ export const accountsController = {
       if (!passwordsMatch) {
         return h.redirect("/");
       }
+      console.log(user._id);
       request.cookieAuth.set({ id: user._id });
+
+      console.log("=== Cookie Auth Set ===");
+      console.log("User ID:", user._id);
+      console.log("Request.auth:", request.auth);
+      console.log("Request.state:", request.state);
+      console.log("Cookie (via request.headers.cookie):", request.headers.cookie);
+      console.log("=======================");
+
       db.userCount += 1; // To document the amount of users logged in
       return h.redirect("/dashboard");
     },
   },
+
+  googleLogin: {
+    auth: {
+      strategies: ["google", "session"],
+      mode: "try",
+    },
+    //    auth: "google",
+    handler: async function (request, h) {
+      if (!request.auth.isAuthenticated) {
+        return h.redirect("/");
+      }
+
+      const googleProfile = request.auth.credentials.profile;
+      let user = await db.userStore.getUserByEmail(googleProfile.email);
+      console.log("Google response:", googleProfile);
+      if (!user) {
+        // Create a new user if not exists
+        const newUser = {
+          firstName: googleProfile.name.given_name,
+          lastName: googleProfile.name.family_name,
+          email: googleProfile.email,
+          password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10), //random password (not in use anyways)
+        };
+        user = await db.userStore.addUser(newUser);
+        console.log("Added user: ", user);
+      }
+
+      request.cookieAuth.clear();
+      h.state(
+        process.env.cookie_name,
+        { id: user._id },
+        {
+          isSecure: false, // match my cookie config
+          path: "/",
+        }
+      );
+
+      console.log("=== Cookie Auth Set ===");
+      console.log("User ID:", user._id);
+      console.log("Request.auth:", request.auth);
+      console.log("Request.state:", request.state);
+      console.log("Cookie (via request.headers.cookie):", request.headers.cookie);
+      console.log("=======================");
+
+      db.userCount += 1; // To document the amount of users logged in
+      return h.redirect("/dashboard");
+    },
+  },
+
   logout: {
     auth: false,
     handler: function (request, h) {
@@ -74,8 +136,10 @@ export const accountsController = {
       return h.redirect("/");
     },
   },
+
   async validate(request, session) {
     const user = await db.userStore.getUserById(session.id);
+    console.log("Inside validate: ", user._id);
     if (!user) {
       return { isValid: false };
     }

@@ -13,16 +13,20 @@ import dotenv from "dotenv";
 import Joi from "joi";
 import { validate } from "./api/jwt-utils.js";
 import fs from "fs";
+import Bell from "@hapi/bell";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let isProduction = true;
 let _host = "0.0.0.0";
+let _location = "https://mypoi-a68z.onrender.com";
 
 export async function init() {
   const server = Hapi.server({ port: process.env.PORT || 3000, host: _host });
   await server.register(Vision);
   await server.register(Cookie);
   await server.register(HapiAuthJwt2);
+  await server.register(Bell);
 
   server.auth.strategy("jwt", "jwt", {
     // Authentification for API
@@ -41,6 +45,16 @@ export async function init() {
     redirectTo: "/",
     validate: accountsController.validate,
   });
+
+  server.auth.strategy("google", "bell", {
+    provider: Bell.providers.google(),
+    password: process.env.COOKIE_SECRET,
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    isSecure: isProduction,
+    location: _location,
+  });
+
   server.auth.default("session");
 
   server.validator(Joi);
@@ -86,6 +100,8 @@ process.on("unhandledRejection", (err) => {
 if (process.env.NODE_ENV !== "production") {
   const result = dotenv.config({ path: path.resolve(__dirname, "../.env") });
   _host = "localhost";
+  _location = "http://localhost:3000";
+  isProduction = false;
 
   if (result.error) {
     console.log("Warning: .env file not found.");
