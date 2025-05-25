@@ -5,3 +5,8 @@
   {{> list-categories}}
   {{> add-category}}
 </section>
+<script>
+  if (document.title === "My Point of Interest Dashboard") {
+    document.getElementById("backButton").style.display = "none";
+  }
+</script>

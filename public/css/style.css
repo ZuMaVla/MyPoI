@@ -1,0 +1,37 @@
+.heart-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.heart-default {
+  position: absolute;
+  top: -11px;
+  left: -3px;
+  width: 1em;
+  height: 1em;
+}
+.heart-hover {
+  position: absolute;
+  top: -11px;
+  left: -15px;
+  width: 1em;
+  height: 1em;
+}
+
+.heart-hover {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.has-heart-hover:hover .heart-hover {
+  opacity: 1;
+}
+
+.has-heart-hover:hover .heart-default {
+  opacity: 0;
+}
+
+#add-place-to-favourite {
+  max-width: 40px;
+  width: 40px;
+}

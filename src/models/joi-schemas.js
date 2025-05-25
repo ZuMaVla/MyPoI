@@ -13,6 +13,7 @@ export const UserSpec = UserCredentialsSpec.keys({
   firstName: Joi.string().example("Homer").required(),
   lastName: Joi.string().example("Simpson").required(),
   admin: Joi.boolean().optional(),
+  favouritePlace: 
 }).label("UserDetails");
 
 export const UserSpecPlus = UserSpec.keys({
