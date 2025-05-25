@@ -1,9 +1,10 @@
 {{> menu active="dashboard"}}
 
 <section class="section">
-  {{ title }}
-  {{> list-categories}}
   {{> add-category}}
+  <h1 class="title is-4 mb-2">Categories:</h1>
+  {{> list-categories}}
+
 </section>
 <script>
   if (document.title === "My Point of Interest Dashboard") {

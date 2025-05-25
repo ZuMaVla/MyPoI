@@ -62,7 +62,7 @@
   <tbody>
     <b>My favourite places:</b>  
     {{#each favouritePlaces}}
-      <tr>
+      <tr class="mb-0">
         <td>
           {{this.name}}
         </td>
@@ -76,6 +76,16 @@
           {{> vote}}
         </td>
         <td class="has-text-right">
+          <a id="remove-place-from-favourite" class="button has-heart-hover" href="/category/{{categoryId}}/place/{{_id}}/removefavourite">
+            <span class="heart-wrapper">
+              <span class="icon is-small heart-default">
+                {{> favourite-image}}
+              </span>
+              <span class="icon is-small heart-hover">
+                {{> unfavourite-image}}
+              </span>
+            </span>
+          </a>
           <a id="open-place" class="button" href="/category/{{categoryId}}/place/{{_id}}">
             <span class="icon is-small">
               {{> open-image}}
@@ -119,7 +129,7 @@
           {{> vote}}
         </td>
         <td class="has-text-right">
-          <a id="add-place-to-favourite" class="button has-heart-hover" href="/category/{{categoryId}}/add-favorite/{{_id}}">
+          <a id="add-place-to-favourite" class="button has-heart-hover" href="/category/{{categoryId}}/place/{{_id}}/addfavourite">
             <span class="heart-wrapper">
               <span class="icon is-small heart-default">
                 {{> heart-image}}

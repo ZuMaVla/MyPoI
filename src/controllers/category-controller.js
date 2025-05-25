@@ -8,9 +8,10 @@ export const categoryController = {
       console.log("Inside dashboard; user: ");
       console.log(currentUser);
       const category = await db.categoryStore.getCategoryById(request.params.id);
-      const privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
+      let privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
 
       let publicPlaces = [];
+      let favouritePlaces = [];
 
       if (currentUser.admin) {
         // For admins, all places of a category are considered "public", except those private to the admin
@@ -18,38 +19,24 @@ export const categoryController = {
       } else {
         // For normal users, only public places are considered "public", except those private to the user
         publicPlaces = await db.placeStore.getPublicPlacesByCategoryId(category._id);
+        // Filter out places that are private from public ones (to repeat double displaying)
         publicPlaces = publicPlaces.filter((place) => !privatePlaces.some((privatePlace) => privatePlace._id.toString() === place._id.toString()));
       }
 
-      for (let i = 0; i < privatePlaces.length; i++) {
-        const ratings = privatePlaces[i].ratings || [];
-        let averageRating = 0;
-        if (ratings.length > 0) {
-          let sum = 0;
-          for (let j = 0; j < ratings.length; j++) {
-            sum += ratings[j].rating;
-          }
-          averageRating = (sum / ratings.length).toFixed(1);
-        }
-        privatePlaces[i].averageRating = averageRating;
+      if (currentUser.favouritePlaces && currentUser.favouritePlaces.length > 0) {
+        favouritePlaces = publicPlaces.filter((place) => currentUser.favouritePlaces.includes(place._id.toString()));
       }
+      // Filter out places that are favourite from public ones (to repeat double displaying)
+      publicPlaces = publicPlaces.filter((place) => !favouritePlaces.some((favouritePlace) => favouritePlace._id.toString() === place._id.toString()));
 
-      for (let i = 0; i < publicPlaces.length; i++) {
-        const ratings = publicPlaces[i].ratings || [];
-        let averageRating = 0;
-        if (ratings.length > 0) {
-          let sum = 0;
-          for (let j = 0; j < ratings.length; j++) {
-            sum += ratings[j].rating;
-          }
-          averageRating = (sum / ratings.length).toFixed(1);
-        }
-        publicPlaces[i].averageRating = averageRating;
-      }
+      privatePlaces = averageRating(privatePlaces);
+      favouritePlaces = averageRating(favouritePlaces);
+      publicPlaces = averageRating(publicPlaces);
 
       const viewData = {
         title: category.categoryName,
         privatePlaces: privatePlaces,
+        favouritePlaces: favouritePlaces,
         publicPlaces: publicPlaces,
         categoryId: category._id,
       };
@@ -90,3 +77,19 @@ export const categoryController = {
     },
   },
 };
+
+function averageRating(places) {
+  for (let i = 0; i < places.length; i++) {
+    const ratings = places[i].ratings || [];
+    let averageRating = 0;
+    if (ratings.length > 0) {
+      let sum = 0;
+      for (let j = 0; j < ratings.length; j++) {
+        sum += ratings[j].rating;
+      }
+      averageRating = (sum / ratings.length).toFixed(1);
+    }
+    places[i].averageRating = averageRating;
+  }
+  return places;
+}

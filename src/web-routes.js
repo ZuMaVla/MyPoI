@@ -23,6 +23,8 @@ export const webRoutes = [
   { method: "POST", path: "/category/{categoryId}/place/{id}/addphoto", config: placeController.addPhoto },
   { method: "GET", path: "/category/{categoryId}/place/{id}/toggleprivacy", config: placeController.togglePrivacy },
   { method: "POST", path: "/category/{categoryId}/place/{id}/addcomment", config: placeController.addComment },
+  { method: "GET", path: "/category/{categoryId}/place/{id}/addfavourite", config: accountsController.addFavourite },
+  { method: "GET", path: "/category/{categoryId}/place/{id}/removefavourite", config: accountsController.removeFavourite },
   { method: "GET", path: "/category/{categoryId}/place/{id}/editcomment/{commentId}", config: placeController.editComment },
   { method: "POST", path: "/category/{categoryId}/place/{id}/editcomment/{commentId}", config: placeController.replaceComment },
   { method: "GET", path: "/category/{categoryId}/place/{id}/deletecomment/{commentId}", config: placeController.deleteComment },

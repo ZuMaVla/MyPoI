@@ -137,6 +137,48 @@ export const accountsController = {
     },
   },
 
+  addFavourite: {
+    auth: "session",
+    handler: async function (request, h) {
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      if (!currentUser) {
+        console.log("Unidentified user");
+      } else {
+        const place = await db.placeStore.getPlaceById(request.params.id);
+        if (!place) {
+          console.log("Incorrect place");
+        } else {
+          if (!currentUser.favouritePlaces) {
+            currentUser.favouritePlaces = [];
+          }
+          currentUser.favouritePlaces.push(place._id.toString());
+          await db.userStore.updateUser(currentUser, currentUser);
+        }
+      }
+      return h.redirect(`/category/${request.params.categoryId}`);
+    },
+  },
+
+  removeFavourite: {
+    auth: "session",
+    handler: async function (request, h) {
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      if (!currentUser) {
+        console.log("Unidentified user");
+      } else {
+        const place = await db.placeStore.getPlaceById(request.params.id);
+        if (!place) {
+          console.log("Incorrect place");
+        } else {
+          const placeIdToRemove = place._id.toString();
+          currentUser.favouritePlaces = currentUser.favouritePlaces.filter((strId) => strId !== placeIdToRemove);
+          await db.userStore.updateUser(currentUser, currentUser);
+        }
+      }
+      return h.redirect(`/category/${request.params.categoryId}`);
+    },
+  },
+
   async validate(request, session) {
     const user = await db.userStore.getUserById(session.id);
     console.log("Inside validate: ", user._id);
