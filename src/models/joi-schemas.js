@@ -50,8 +50,8 @@ export const PhotoSpec = {
   caption: Joi.string().required(),
 };
 
-export const CommentSpec = {
-  comment: Joi.string().required(),
+export const ReviewSpec = {
+  review: Joi.string().required(),
   _id: IdSpec,
 };
 

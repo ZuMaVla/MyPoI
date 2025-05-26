@@ -1,11 +1,12 @@
 <form class="mb-0" action="/category/{{this.categoryId}}/place/{{this._id}}/addvote" method="POST">
   <div class="select">
     <select name="vote">
-      <option value="1">⭐</option>
-      <option value="2">⭐⭐</option>
-      <option value="3">⭐⭐⭐</option>
-      <option value="4">⭐⭐⭐⭐</option>
-      <option value="5" selected>⭐⭐⭐⭐⭐</option>
+      <option value="0" {{#if (eq vote 0)}}selected{{/if}}>Your rating?</option>
+      <option value="1" {{#if (eq vote 1)}}selected{{/if}}>⭐</option>
+      <option value="2" {{#if (eq vote 2)}}selected{{/if}}>⭐⭐</option>
+      <option value="3" {{#if (eq vote 3)}}selected{{/if}}>⭐⭐⭐</option>
+      <option value="4" {{#if (eq vote 4)}}selected{{/if}}>⭐⭐⭐⭐</option>
+      <option value="5" {{#if (eq vote 5)}}selected{{/if}}>⭐⭐⭐⭐⭐</option>
     </select>
   </div>
   <button class="button" type="submit">Vote</button>

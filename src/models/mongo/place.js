@@ -53,14 +53,14 @@ const placeSchema = new Schema({
     ],
     default: [], // Default value for the photos array is an empty array
   },
-  comments: {
+  reviews: {
     type: [
       {
-        comment: {
+        review: {
           type: String,
           required: true,
         },
-        commentDate: {
+        reviewDate: {
           type: Date,
           default: Date.now,
         },

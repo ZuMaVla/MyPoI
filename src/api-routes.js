@@ -19,7 +19,7 @@ export const apiRoutes = [
   //  { method: "DELETE", path: "/api/categories/{id}", config: categoryApi.deleteOne },
 
   //  { method: "POST", path: "/api/categories/{id}/places", config: placeApi.create },
-  //  { method: "POST", path: "/api/places/{id}/comment", config: placeApi.comment },
+  //  { method: "POST", path: "/api/places/{id}/review", config: placeApi.review },
   //  { method: "POST", path: "/api/places/{id}/rate", config: placeApi.rate },
   //  { method: "GET", path: "/api/places/{id}", config: placeApi.findOne },
   //  { method: "GET", path: "/api/categories/{id}/places", config: placeApi.find },

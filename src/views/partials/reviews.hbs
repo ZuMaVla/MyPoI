@@ -1,19 +1,19 @@
 <div>
   <table class="table is-fullwidth">
-    {{#each comments}}
+    {{#each reviews}}
       <tr style="vertical-align: top; border-top: 1px solid #dbdbdb;">
         <td>
-          {{author}} {{dateTime}}<br>
-          <p style="white-space: pre-line;">{{{comment}}}</p>
+          {{author}} {{dateTime}} Author's rating: {{vote}}<br>
+          <p style="white-space: pre-line;">{{{review}}}</p>
         </td>
 
         {{#if (eq userIdStr ../user._idStr)}}
         <td class="has-text-right">
           <p class="has-text-right">
-            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/editcomment/{{_id}}">
+            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/editreview/{{_id}}">
               <span class="icon is-small">{{> edit-image}}</span>
             </a>
-            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/deletecomment/{{_id}}">
+            <a class="button" href="/category/{{../place.categoryId}}/place/{{../place._id}}/deletereview/{{_id}}">
               <span class="icon is-small">{{> delete-image}}</span>
             </a>
           </p>

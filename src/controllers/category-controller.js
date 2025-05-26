@@ -30,9 +30,9 @@ export const categoryController = {
       // Filter out places that are favourite from public ones (to repeat double displaying)
       publicPlaces = publicPlaces.filter((place) => !favouritePlaces.some((favouritePlace) => favouritePlace._id.toString() === place._id.toString()));
 
-      privatePlaces = averageRating(privatePlaces);
-      favouritePlaces = averageRating(favouritePlaces);
-      publicPlaces = averageRating(publicPlaces);
+      privatePlaces = averageAndPersonalRating(privatePlaces, currentUser._id);
+      favouritePlaces = averageAndPersonalRating(favouritePlaces, currentUser._id);
+      publicPlaces = averageAndPersonalRating(publicPlaces, currentUser._id);
 
       const viewData = {
         url: url,
@@ -80,18 +80,23 @@ export const categoryController = {
   },
 };
 
-function averageRating(places) {
+function averageAndPersonalRating(places, userId) {
   for (let i = 0; i < places.length; i++) {
     const ratings = places[i].ratings || [];
     let averageRating = 0;
+    let vote = 0;
     if (ratings.length > 0) {
       let sum = 0;
       for (let j = 0; j < ratings.length; j++) {
+        if (ratings[j].userId.toString() === userId.toString()) {
+          vote = ratings[j].rating;
+        }
         sum += ratings[j].rating;
       }
       averageRating = (sum / ratings.length).toFixed(1);
     }
     places[i].averageRating = averageRating;
+    places[i].vote = vote;
   }
   return places;
 }
