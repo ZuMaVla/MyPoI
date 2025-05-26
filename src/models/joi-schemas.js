@@ -33,8 +33,8 @@ export const JwtAuth = Joi.object()
 export const PlaceSpec = {
   name: Joi.string().required(),
   description: Joi.string().required(),
-  latitude: Joi.number().allow("").optional(),
-  longitude: Joi.number().allow("").optional(),
+  latitude: Joi.number().min(51.3).max(55.5).required(),
+  longitude: Joi.number().min(-10.7).max(-5.3).required(),
   _private: Joi.boolean().optional(),
 };
 

@@ -22,8 +22,8 @@ const placeSchema = new Schema({
   longitude: {
     type: Number,
     required: true, // Longitude is required
-    min: -10.5, // Min longitude for Ireland
-    max: -5.5, // Max longitude for Ireland
+    min: -10.7, // Min longitude for Ireland
+    max: -5.3, // Max longitude for Ireland
   },
   _private: {
     type: Boolean,
