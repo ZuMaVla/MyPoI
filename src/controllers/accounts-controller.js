@@ -8,19 +8,28 @@ export const accountsController = {
     auth: false,
     handler: function (request, h) {
       const serverId = fs.readFileSync("./server_id.txt", "utf8").trim();
+      const query = {};
+      query.next = request.query.next;
       const viewData = {
-        serverId: serverId,
+        query: query,
+        serverId: serverId, //for AWS: to store instance ID
         title: "Welcome to MyPoI",
       };
       return h.view("main", viewData);
-      //return h.view("main", { title: "Welcome to MyPoI " });
     },
   },
 
   showSignup: {
     auth: false,
     handler: function (request, h) {
-      return h.view("signup-view", { title: "Sign up for MyPoI" });
+      const query = {};
+      query.next = request.query.next;
+      const viewData = {
+        query: query,
+        title: "Sign up for MyPoI",
+      };
+
+      return h.view("signup-view", viewData);
     },
   },
 
@@ -38,14 +47,21 @@ export const accountsController = {
       const saltRounds = 10;
       user.password = await bcrypt.hash(user.password, saltRounds);
       await db.userStore.addUser(user);
-      return h.redirect("/");
+      let next = request.query.next ? `/login?next=${request.query.next}` : "/login";
+      return h.redirect(next);
     },
   },
 
   showLogin: {
     auth: false,
     handler: function (request, h) {
-      return h.view("login-view", { title: "Login to MyPoI" });
+      const query = {};
+      query.next = request.query.next;
+      const viewData = {
+        query: query,
+        title: "Login to MyPoI",
+      };
+      return h.view("login-view", viewData);
     },
   },
 
@@ -84,7 +100,9 @@ export const accountsController = {
 
       db.userCount += 1; // To document the amount of users logged in
 
-      const redirectTo = request.query.next || "/dashboard";
+      let next = decodeURIComponent(request.query.next || "/dashboard");
+
+      const redirectTo = next || "/dashboard";
       return h.redirect(redirectTo);
     },
   },
