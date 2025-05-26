@@ -53,6 +53,7 @@ export async function init() {
       isSecure: false,
     },
     redirectTo: "/",
+    appendNext: true, //redirect to different page, not dashboard
     validate: accountsController.validate,
   });
 

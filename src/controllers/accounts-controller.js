@@ -55,17 +55,24 @@ export const accountsController = {
       payload: UserCredentialsSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("login-view", { title: "Log in error", errors: error.details }).takeover().code(400);
+        return h
+          .view("login-view", {
+            title: "Log in error",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
       },
     },
     handler: async function (request, h) {
       const { email, password } = request.payload;
       const user = await db.userStore.getUserByEmail(email);
       const passwordsMatch = user ? await bcrypt.compare(password, user.password) : false;
+
       if (!passwordsMatch) {
-        return h.redirect("/");
+        return h.redirect("/login"); // Redirect to login page again
       }
-      console.log(user._id);
+
       request.cookieAuth.set({ id: user._id });
 
       console.log("=== Cookie Auth Set ===");
@@ -76,7 +83,9 @@ export const accountsController = {
       console.log("=======================");
 
       db.userCount += 1; // To document the amount of users logged in
-      return h.redirect("/dashboard");
+
+      const redirectTo = request.query.next || "/dashboard";
+      return h.redirect(redirectTo);
     },
   },
 

@@ -32,7 +32,9 @@
 }
 
 #add-place-to-favourite,
-#remove-place-from-favourite {
+#remove-place-from-favourite,
+#share-favourite-place,
+#share-other-place {
   max-width: 40px;
   width: 40px;
 }

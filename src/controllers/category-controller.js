@@ -1,3 +1,4 @@
+import { server } from "@hapi/hapi";
 import { db } from "../models/db.js";
 import { PlaceSpec } from "../models/joi-schemas.js";
 
@@ -9,7 +10,7 @@ export const categoryController = {
       console.log(currentUser);
       const category = await db.categoryStore.getCategoryById(request.params.id);
       let privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
-
+      const url = server.host;
       let publicPlaces = [];
       let favouritePlaces = [];
 
@@ -34,6 +35,7 @@ export const categoryController = {
       publicPlaces = averageRating(publicPlaces);
 
       const viewData = {
+        url: url,
         title: category.categoryName,
         privatePlaces: privatePlaces,
         favouritePlaces: favouritePlaces,
