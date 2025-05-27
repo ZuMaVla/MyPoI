@@ -14,7 +14,7 @@
   <tbody>
     <tr class="mb-0">
       <td>
-        {{recentPlace.name}}
+        <u><a class="has-text-info" href="/category/{{recentPlace.categoryId}}/place/{{recentPlace._id}}">{{recentPlace.name}}</a></u>
       </td>
       <td>
         {{recentPlace.description}}
@@ -41,7 +41,7 @@
   <tbody>
     <tr class="mb-0">
       <td>
-        {{discussedPlace.name}}
+        <u><a class="has-text-info" href="/category/{{discussedPlace.categoryId}}/place/{{discussedPlace._id}}">{{discussedPlace.name}}</a></u>
       </td>
       <td>
         {{discussedPlace.description}}
@@ -68,7 +68,7 @@
   <tbody>
     <tr class="mb-0">
       <td>
-        {{popularPlace.name}}
+        <u><a class="has-text-info" href="/category/{{popularPlace.categoryId}}/place/{{popularPlace._id}}">{{popularPlace.name}}</a></u>
       </td>
       <td>
         {{popularPlace.description}}
