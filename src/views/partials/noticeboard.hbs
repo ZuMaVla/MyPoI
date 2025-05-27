@@ -1,0 +1,89 @@
+<h1 class="title is-3">
+  Noticeboard
+</h1>
+<p class="title is-5 mb-0">Most recently added place:</p>
+<table class="table is-fullwidth mb-0">
+  <thead>
+    <tr>
+      <th style="width: 25%;">Place</th>
+      <th style="width: 30%;">Description</th>
+      <th style="width: 10%;">Rating</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="mb-0">
+      <td>
+        {{recentPlace.name}}
+      </td>
+      <td>
+        {{recentPlace.description}}
+      </td>
+      <td>
+        {{recentPlace.averageRating}}
+      </td>
+      <td class="has-text-right">
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="title is-5 mb-0 mt-2">Most popular place:</p>
+<table class="table is-fullwidth mb-0">
+  <thead>
+    <tr>
+      <th style="width: 25%;"></th>
+      <th style="width: 30%;"></th>
+      <th style="width: 10%;"></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="mb-0">
+      <td>
+        {{discussedPlace.name}}
+      </td>
+      <td>
+        {{discussedPlace.description}}
+      </td>
+      <td>
+        {{discussedPlace.averageRating}}
+      </td>
+      <td class="has-text-right">
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="title is-5 mb-0 mt-2">Most discussed place:</p>
+<table class="table is-fullwidth mb-0">
+  <thead>
+    <tr>
+      <th style="width: 25%;"></th>
+      <th style="width: 30%;"></th>
+      <th style="width: 10%;"></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="mb-0">
+      <td>
+        {{popularPlace.name}}
+      </td>
+      <td>
+        {{popularPlace.description}}
+      </td>
+      <td>
+        {{popularPlace.averageRating}}
+      </td>
+      <td class="has-text-right">
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="title is-5 mb-0 mt-2">Most active reviewer:</p>
+<div class="box">
+  {{topReviewer}}<span> => </span>
+  Reviews:<span> </span>{{reviews}}
+</div>
