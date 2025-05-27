@@ -1,6 +1,7 @@
 import { server } from "@hapi/hapi";
 import { db } from "../models/db.js";
 import { PlaceSpec } from "../models/joi-schemas.js";
+import sanitizeHtml from "sanitize-html";
 
 export const categoryController = {
   index: {
@@ -56,9 +57,17 @@ export const categoryController = {
     },
     handler: async function (request, h) {
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      const sanitisedName = sanitizeHtml(request.payload.name, {
+        allowedTags: [], // no tags allowed
+        allowedAttributes: {}, // no attributes allowed
+      });
+      const sanitisedDescription = sanitizeHtml(request.payload.description, {
+        allowedTags: [],
+        allowedAttributes: {},
+      });
       const newPlace = {
-        name: request.payload.name,
-        description: request.payload.description,
+        name: sanitisedName,
+        description: sanitisedDescription,
         latitude: Number(request.payload.latitude),
         longitude: Number(request.payload.longitude),
         userId: currentUser._id,
@@ -85,15 +94,23 @@ function averageAndPersonalRating(places, userId) {
     const ratings = places[i].ratings || [];
     let averageRating = 0;
     let vote = 0;
-    if (ratings.length > 0) {
+    let votes = ratings.length;
+    if (votes > 0) {
       let sum = 0;
       for (let j = 0; j < ratings.length; j++) {
         if (ratings[j].userId.toString() === userId.toString()) {
           vote = ratings[j].rating;
         }
+        if (ratings[j].rating === 0) {
+          votes -= 1;
+        }
         sum += ratings[j].rating;
       }
-      averageRating = (sum / ratings.length).toFixed(1);
+      if (votes !== 0) {
+        averageRating = (sum / ratings.length).toFixed(1);
+      } else {
+        averageRating = 0;
+      }
     }
     places[i].averageRating = averageRating;
     places[i].vote = vote;
