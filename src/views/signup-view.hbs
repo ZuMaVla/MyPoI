@@ -2,7 +2,7 @@
 
 <section class="section">
   <h1 class="title">Sign up</h1>
-  <form action="/register" method="POST">
+  <form action="/register{{#if query.next}}?next={{query.next}}{{/if}}" method="POST">
     <label class="label">Name</label>
     <div class="field is-horizontal">
       <div class="field-body">

@@ -22,6 +22,10 @@ export const userMongoStore = {
     return u;
   },
 
+  async updateUser(user, updatedUser) {
+    await User.updateOne({ _id: user._id }, updatedUser);
+  },
+
   async getUserByEmail(email) {
     const user = await User.findOne({ email: email }).lean();
     return user;

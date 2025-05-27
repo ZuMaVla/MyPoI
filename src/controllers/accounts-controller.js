@@ -8,19 +8,28 @@ export const accountsController = {
     auth: false,
     handler: function (request, h) {
       const serverId = fs.readFileSync("./server_id.txt", "utf8").trim();
+      const query = {};
+      query.next = request.query.next;
       const viewData = {
-        serverId: serverId,
+        query: query,
+        serverId: serverId, //for AWS: to store instance ID
         title: "Welcome to MyPoI",
       };
       return h.view("main", viewData);
-      //return h.view("main", { title: "Welcome to MyPoI " });
     },
   },
 
   showSignup: {
     auth: false,
     handler: function (request, h) {
-      return h.view("signup-view", { title: "Sign up for MyPoI" });
+      const query = {};
+      query.next = request.query.next;
+      const viewData = {
+        query: query,
+        title: "Sign up for MyPoI",
+      };
+
+      return h.view("signup-view", viewData);
     },
   },
 
@@ -38,14 +47,21 @@ export const accountsController = {
       const saltRounds = 10;
       user.password = await bcrypt.hash(user.password, saltRounds);
       await db.userStore.addUser(user);
-      return h.redirect("/");
+      let next = request.query.next ? `/login?next=${request.query.next}` : "/login";
+      return h.redirect(next);
     },
   },
 
   showLogin: {
     auth: false,
     handler: function (request, h) {
-      return h.view("login-view", { title: "Login to MyPoI" });
+      const query = {};
+      query.next = request.query.next;
+      const viewData = {
+        query: query,
+        title: "Login to MyPoI",
+      };
+      return h.view("login-view", viewData);
     },
   },
 
@@ -55,17 +71,24 @@ export const accountsController = {
       payload: UserCredentialsSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("login-view", { title: "Log in error", errors: error.details }).takeover().code(400);
+        return h
+          .view("login-view", {
+            title: "Log in error",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
       },
     },
     handler: async function (request, h) {
       const { email, password } = request.payload;
       const user = await db.userStore.getUserByEmail(email);
       const passwordsMatch = user ? await bcrypt.compare(password, user.password) : false;
+
       if (!passwordsMatch) {
-        return h.redirect("/");
+        return h.redirect("/login"); // Redirect to login page again
       }
-      console.log(user._id);
+
       request.cookieAuth.set({ id: user._id });
 
       console.log("=== Cookie Auth Set ===");
@@ -76,7 +99,11 @@ export const accountsController = {
       console.log("=======================");
 
       db.userCount += 1; // To document the amount of users logged in
-      return h.redirect("/dashboard");
+
+      let next = decodeURIComponent(request.query.next || "/dashboard");
+
+      const redirectTo = next || "/dashboard";
+      return h.redirect(redirectTo);
     },
   },
 
@@ -134,6 +161,48 @@ export const accountsController = {
       request.cookieAuth.clear();
       db.userCount -= 1; // To document the amount of users logged in
       return h.redirect("/");
+    },
+  },
+
+  addFavourite: {
+    auth: "session",
+    handler: async function (request, h) {
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      if (!currentUser) {
+        console.log("Unidentified user");
+      } else {
+        const place = await db.placeStore.getPlaceById(request.params.id);
+        if (!place) {
+          console.log("Incorrect place");
+        } else {
+          if (!currentUser.favouritePlaces) {
+            currentUser.favouritePlaces = [];
+          }
+          currentUser.favouritePlaces.push(place._id.toString());
+          await db.userStore.updateUser(currentUser, currentUser);
+        }
+      }
+      return h.redirect(`/category/${request.params.categoryId}`);
+    },
+  },
+
+  removeFavourite: {
+    auth: "session",
+    handler: async function (request, h) {
+      const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      if (!currentUser) {
+        console.log("Unidentified user");
+      } else {
+        const place = await db.placeStore.getPlaceById(request.params.id);
+        if (!place) {
+          console.log("Incorrect place");
+        } else {
+          const placeIdToRemove = place._id.toString();
+          currentUser.favouritePlaces = currentUser.favouritePlaces.filter((strId) => strId !== placeIdToRemove);
+          await db.userStore.updateUser(currentUser, currentUser);
+        }
+      }
+      return h.redirect(`/category/${request.params.categoryId}`);
     },
   },
 

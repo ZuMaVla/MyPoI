@@ -1,14 +1,11 @@
 <tr>
   <td>
-    {{author}}
-    {{dateTime}}
     <br />
-
-    <form method="POST" action="/category/{{categoryId}}/place/{{placeId}}/editcomment/{{commentId}}">
+    <form method="POST" action="/category/{{categoryId}}/place/{{placeId}}/editreview/{{reviewId}}">
       <div class="field">
-        <label class="label">Comment</label>
+        <label class="label">Review</label>
         <div class="control">
-          <textarea class="textarea" name="comment" required>{{text}}</textarea>
+          <textarea class="textarea" name="review" required>{{text}}</textarea>
         </div>
       </div>
 
@@ -21,6 +18,5 @@
         </div>
       </div>
     </form>
-
   </td>
 </tr>

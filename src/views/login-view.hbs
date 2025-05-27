@@ -2,7 +2,7 @@
 
 <section class="section">
   <h1 class="title">Log in</h1>
-  <form action="/authenticate" method="POST">
+  <form action="/authenticate{{#if query.next}}?next={{query.next}}{{/if}}" method="POST"> <!--if share-->
     <div class="field">
       <label class="label">Email</label> <input class="input" type="text" placeholder="Enter email" name="email">
     </div>

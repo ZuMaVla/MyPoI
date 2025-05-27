@@ -1,0 +1,17 @@
+[
+  {
+    "id": 0,
+    "type": "admin user",
+    "email": "admin@admin.com",
+    "password": "1234"
+  },
+
+  {
+    "id": 1,
+    "type": "common user",
+    "first_name": "John",
+    "last_name": "Snow",
+    "email": "john@snow.com",
+    "password": "1234"
+  }
+]

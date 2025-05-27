@@ -29,5 +29,9 @@ const userSchema = new Schema({
     type: Boolean,
     required: false,
   },
+  favouritePlaces: {
+    type: [String], // <- store _ids as strings
+    required: false,
+  },
 });
 export const User = Mongoose.model("User", userSchema);

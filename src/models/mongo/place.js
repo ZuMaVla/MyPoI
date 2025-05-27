@@ -22,8 +22,8 @@ const placeSchema = new Schema({
   longitude: {
     type: Number,
     required: true, // Longitude is required
-    min: -10.5, // Min longitude for Ireland
-    max: -5.5, // Max longitude for Ireland
+    min: -10.7, // Min longitude for Ireland
+    max: -5.3, // Max longitude for Ireland
   },
   _private: {
     type: Boolean,
@@ -53,14 +53,14 @@ const placeSchema = new Schema({
     ],
     default: [], // Default value for the photos array is an empty array
   },
-  comments: {
+  reviews: {
     type: [
       {
-        comment: {
+        review: {
           type: String,
           required: true,
         },
-        commentDate: {
+        reviewDate: {
           type: Date,
           default: Date.now,
         },
@@ -84,7 +84,7 @@ const placeSchema = new Schema({
         rating: {
           type: Number,
           required: true,
-          min: 1,
+          min: 0,
           max: 5, // or whatever your rating range is
         },
       },

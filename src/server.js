@@ -2,6 +2,7 @@ import Hapi from "@hapi/hapi";
 import HapiAuthJwt2 from "hapi-auth-jwt2";
 import Vision from "@hapi/vision";
 import Handlebars from "handlebars";
+import Inert from "@hapi/inert";
 import path from "path";
 import { fileURLToPath } from "url";
 import { webRoutes } from "./web-routes.js";
@@ -22,7 +23,16 @@ let _host = "0.0.0.0";
 let _location = "https://mypoi-a68z.onrender.com";
 
 export async function init() {
-  const server = Hapi.server({ port: process.env.PORT || 3000, host: _host });
+  const server = Hapi.server({
+    port: process.env.PORT || 3000,
+    host: _host,
+    routes: {
+      files: {
+        relativeTo: path.join(__dirname, "..", "public"), // serves from top-level public/
+      },
+    },
+  });
+
   await server.register(Vision);
   await server.register(Cookie);
   await server.register(HapiAuthJwt2);
@@ -43,6 +53,7 @@ export async function init() {
       isSecure: false,
     },
     redirectTo: "/",
+    appendNext: true, //redirect to different page, not dashboard
     validate: accountsController.validate,
   });
 
@@ -84,8 +95,22 @@ export async function init() {
     return h.continue;
   });
 
+  await server.register(Inert);
+
   server.route(webRoutes);
   server.route(apiRoutes);
+
+  server.route({
+    method: "GET",
+    path: "/public/{param*}",
+    handler: {
+      directory: {
+        path: ".", // serves from public/
+        index: false,
+      },
+    },
+  });
+
   await server.start();
   console.log("Server running on %s", server.info.uri);
   console.log("Views directory:", path.resolve(__dirname, "./views/layouts"));

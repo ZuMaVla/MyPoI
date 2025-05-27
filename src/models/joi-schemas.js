@@ -13,6 +13,7 @@ export const UserSpec = UserCredentialsSpec.keys({
   firstName: Joi.string().example("Homer").required(),
   lastName: Joi.string().example("Simpson").required(),
   admin: Joi.boolean().optional(),
+  favouritePlaces: Joi.array().items(Joi.string()).optional(),
 }).label("UserDetails");
 
 export const UserSpecPlus = UserSpec.keys({
@@ -32,8 +33,8 @@ export const JwtAuth = Joi.object()
 export const PlaceSpec = {
   name: Joi.string().required(),
   description: Joi.string().required(),
-  latitude: Joi.number().allow("").optional(),
-  longitude: Joi.number().allow("").optional(),
+  latitude: Joi.number().min(51.3).max(55.5).required(),
+  longitude: Joi.number().min(-10.7).max(-5.3).required(),
   _private: Joi.boolean().optional(),
 };
 
@@ -49,8 +50,8 @@ export const PhotoSpec = {
   caption: Joi.string().required(),
 };
 
-export const CommentSpec = {
-  comment: Joi.string().required(),
+export const ReviewSpec = {
+  review: Joi.string().required(),
   _id: IdSpec,
 };
 

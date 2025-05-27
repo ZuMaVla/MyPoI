@@ -1,5 +1,7 @@
+import { server } from "@hapi/hapi";
 import { db } from "../models/db.js";
 import { PlaceSpec } from "../models/joi-schemas.js";
+import sanitizeHtml from "sanitize-html";
 
 export const categoryController = {
   index: {
@@ -8,9 +10,10 @@ export const categoryController = {
       console.log("Inside dashboard; user: ");
       console.log(currentUser);
       const category = await db.categoryStore.getCategoryById(request.params.id);
-      const privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
-
+      let privatePlaces = await db.placeStore.getPrivatePlacesByUserIdByCategoryId(currentUser._id, category._id);
+      const url = server.host;
       let publicPlaces = [];
+      let favouritePlaces = [];
 
       if (currentUser.admin) {
         // For admins, all places of a category are considered "public", except those private to the admin
@@ -18,38 +21,25 @@ export const categoryController = {
       } else {
         // For normal users, only public places are considered "public", except those private to the user
         publicPlaces = await db.placeStore.getPublicPlacesByCategoryId(category._id);
+        // Filter out places that are private from public ones (to repeat double displaying)
         publicPlaces = publicPlaces.filter((place) => !privatePlaces.some((privatePlace) => privatePlace._id.toString() === place._id.toString()));
       }
 
-      for (let i = 0; i < privatePlaces.length; i++) {
-        const ratings = privatePlaces[i].ratings || [];
-        let averageRating = 0;
-        if (ratings.length > 0) {
-          let sum = 0;
-          for (let j = 0; j < ratings.length; j++) {
-            sum += ratings[j].rating;
-          }
-          averageRating = (sum / ratings.length).toFixed(1);
-        }
-        privatePlaces[i].averageRating = averageRating;
+      if (currentUser.favouritePlaces && currentUser.favouritePlaces.length > 0) {
+        favouritePlaces = publicPlaces.filter((place) => currentUser.favouritePlaces.includes(place._id.toString()));
       }
+      // Filter out places that are favourite from public ones (to repeat double displaying)
+      publicPlaces = publicPlaces.filter((place) => !favouritePlaces.some((favouritePlace) => favouritePlace._id.toString() === place._id.toString()));
 
-      for (let i = 0; i < publicPlaces.length; i++) {
-        const ratings = publicPlaces[i].ratings || [];
-        let averageRating = 0;
-        if (ratings.length > 0) {
-          let sum = 0;
-          for (let j = 0; j < ratings.length; j++) {
-            sum += ratings[j].rating;
-          }
-          averageRating = (sum / ratings.length).toFixed(1);
-        }
-        publicPlaces[i].averageRating = averageRating;
-      }
+      privatePlaces = averageAndPersonalRating(privatePlaces, currentUser._id);
+      favouritePlaces = averageAndPersonalRating(favouritePlaces, currentUser._id);
+      publicPlaces = averageAndPersonalRating(publicPlaces, currentUser._id);
 
       const viewData = {
+        url: url,
         title: category.categoryName,
         privatePlaces: privatePlaces,
+        favouritePlaces: favouritePlaces,
         publicPlaces: publicPlaces,
         categoryId: category._id,
       };
@@ -67,9 +57,17 @@ export const categoryController = {
     },
     handler: async function (request, h) {
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
+      const sanitisedName = sanitizeHtml(request.payload.name, {
+        allowedTags: [], // no tags allowed
+        allowedAttributes: {}, // no attributes allowed
+      });
+      const sanitisedDescription = sanitizeHtml(request.payload.description, {
+        allowedTags: [],
+        allowedAttributes: {},
+      });
       const newPlace = {
-        name: request.payload.name,
-        description: request.payload.description,
+        name: sanitisedName,
+        description: sanitisedDescription,
         latitude: Number(request.payload.latitude),
         longitude: Number(request.payload.longitude),
         userId: currentUser._id,
@@ -90,3 +88,32 @@ export const categoryController = {
     },
   },
 };
+
+function averageAndPersonalRating(places, userId) {
+  for (let i = 0; i < places.length; i++) {
+    const ratings = places[i].ratings || [];
+    let averageRating = 0;
+    let vote = 0;
+    let votes = ratings.length;
+    if (votes > 0) {
+      let sum = 0;
+      for (let j = 0; j < ratings.length; j++) {
+        if (ratings[j].userId.toString() === userId.toString()) {
+          vote = ratings[j].rating;
+        }
+        if (ratings[j].rating === 0) {
+          votes -= 1;
+        }
+        sum += ratings[j].rating;
+      }
+      if (votes !== 0) {
+        averageRating = (sum / ratings.length).toFixed(1);
+      } else {
+        averageRating = 0;
+      }
+    }
+    places[i].averageRating = averageRating;
+    places[i].vote = vote;
+  }
+  return places;
+}

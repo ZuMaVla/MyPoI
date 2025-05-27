@@ -1,5 +1,5 @@
 import { db } from "../models/db.js";
-import { CommentSpec, PhotoSpec, RequestDeletePlaceSpec, VoteSpec } from "../models/joi-schemas.js";
+import { ReviewSpec, PhotoSpec, RequestDeletePlaceSpec, VoteSpec } from "../models/joi-schemas.js";
 import sanitizeHtml from "sanitize-html";
 
 export const placeController = {
@@ -8,28 +8,29 @@ export const placeController = {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
       currentUser._idStr = currentUser._id.toString();
-      let placeComments = currentPlace.comments;
+      let placeReviews = currentPlace.reviews;
       let i, _user;
-      const commentCount = placeComments.length;
-      if (commentCount > 0) {
-        for (i = 0; i < commentCount; i++) {
-          _user = await db.userStore.getUserById(placeComments[i].userId);
+      const reviewCount = placeReviews.length;
+      if (reviewCount > 0) {
+        for (i = 0; i < reviewCount; i++) {
+          _user = await db.userStore.getUserById(placeReviews[i].userId);
           if (!_user) {
             _user = {};
             _user.firstName = "Deleted";
             _user.lastName = "user";
           }
-          placeComments[i].author = _user.firstName + " " + _user.lastName;
-          placeComments[i].dateTime =
-            "[" + placeComments[i].commentDate.toLocaleString("en-IE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + "]";
-          placeComments[i].userIdStr = placeComments[i].userId.toString();
+          placeReviews[i].author = _user.firstName + " " + _user.lastName;
+          placeReviews[i].dateTime =
+            "[" + placeReviews[i].reviewDate.toLocaleString("en-IE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + "]";
+          placeReviews[i].userIdStr = placeReviews[i].userId.toString();
+          placeReviews[i].vote = "⭐".repeat(personalRating(currentPlace, _user._id));
         }
       }
       const viewData = {
         user: currentUser,
         title: currentPlace.name,
         place: currentPlace,
-        comments: placeComments,
+        reviews: placeReviews,
       };
       console.log(viewData);
       return h.view("place-view", viewData);
@@ -64,70 +65,69 @@ export const placeController = {
     },
   },
 
-  addComment: {
+  addReview: {
     validate: {
-      payload: CommentSpec,
+      payload: ReviewSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("place-view", { title: "Add comment error", errors: error.details }).takeover().code(400);
+        return h.view("place-view", { title: "Add review error", errors: error.details }).takeover().code(400);
       },
     },
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
-      const sanitizedComment = sanitizeHtml(request.payload.comment, {
+      const sanitisedReview = sanitizeHtml(request.payload.review, {
         allowedTags: ["b", "i"],
         allowedAttributes: {},
       });
-      currentPlace.comments.push({ comment: sanitizedComment, userId: currentUser._id });
-      //currentPlace.comments.push({ comment: request.payload.comment, userId: currentUser._id }); not sanitised comment
+      currentPlace.reviews.push({ review: sanitisedReview, userId: currentUser._id });
 
       await db.placeStore.updatePlace(currentPlace, currentPlace);
       return h.redirect("/category/" + request.params.categoryId + "/place/" + request.params.id);
     },
   },
 
-  editComment: {
+  editReview: {
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
 
-      let textComment = null;
+      let textReview = null;
 
-      for (let i = 0; i < currentPlace.comments.length; i++) {
-        if (currentPlace.comments[i]._id.toString() === request.params.commentId) {
-          textComment = currentPlace.comments[i].comment;
+      for (let i = 0; i < currentPlace.reviews.length; i++) {
+        if (currentPlace.reviews[i]._id.toString() === request.params.reviewId) {
+          textReview = currentPlace.reviews[i].review;
           break;
         }
       }
 
-      if (!textComment) {
+      if (!textReview) {
         return h.view("error-view", {
-          message: "Comment not found",
+          message: "Review not found",
         });
       }
 
       const viewData = {
-        title: `${currentPlace.name} - Editing comment`,
-        text: textComment,
+        title: `${currentPlace.name} - Editing review`,
+        text: textReview,
         categoryId: request.params.categoryId,
         placeId: request.params.id,
-        commentId: request.params.commentId,
+        reviewId: request.params.reviewId,
       };
 
-      return h.view("comment-view", viewData);
+      return h.view("review-view", viewData);
     },
   },
 
-  replaceComment: {
+  replaceReview: {
     validate: {
-      payload: CommentSpec,
+      payload: ReviewSpec,
       options: { abortEarly: false },
       failAction: function (request, h, error) {
-        return h.view("place-view", { title: "Add comment error", errors: error.details }).takeover().code(400);
+        return h.view("place-view", { title: "Add review error", errors: error.details }).takeover().code(400);
       },
     },
     handler: async function (request, h) {
-      const commentId = request.params.commentId;
+      const reviewId = request.params.reviewId;
       const currentUser = await db.userStore.getUserById(request.auth.credentials._id);
       const editorName = currentUser.firstName + " " + currentUser.lastName;
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
@@ -146,21 +146,21 @@ export const placeController = {
         })
         .replace(",", "");
 
-      let editedComment = sanitizeHtml(request.payload.comment, {
+      let editedReview = sanitizeHtml(request.payload.review, {
         allowedTags: ["b", "i"],
         allowedAttributes: {},
       });
 
-      // Send back if the edited comment is empty
-      if (!editedComment || !editedComment.trim()) {
-        return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}/editcomment/${commentId}`);
+      // Send back if the edited review is empty
+      if (!editedReview || !editedReview.trim()) {
+        return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}/editreview/${reviewId}`);
       }
 
-      editedComment += `\n_______________________________________\n Edited by ${editorName} on ${dateStamp} at ${timeStamp}`;
+      editedReview += `\n_______________________________________\n Edited by ${editorName} on ${dateStamp} at ${timeStamp}`;
 
-      for (let i = 0; i < currentPlace.comments.length; i++) {
-        if (currentPlace.comments[i]._id.toString() === commentId) {
-          currentPlace.comments[i].comment = editedComment;
+      for (let i = 0; i < currentPlace.reviews.length; i++) {
+        if (currentPlace.reviews[i]._id.toString() === reviewId) {
+          currentPlace.reviews[i].review = editedReview;
           break;
         }
       }
@@ -171,11 +171,11 @@ export const placeController = {
     },
   },
 
-  deleteComment: {
+  deleteReview: {
     handler: async function (request, h) {
       const currentPlace = await db.placeStore.getPlaceById(request.params.id);
-      const commentId = request.params.commentId;
-      currentPlace.comments = currentPlace.comments.filter((comment) => comment._id.toString() !== commentId);
+      const reviewId = request.params.reviewId;
+      currentPlace.reviews = currentPlace.reviews.filter((review) => review._id.toString() !== reviewId);
       await db.placeStore.updatePlace(currentPlace, currentPlace);
       return h.redirect(`/category/${request.params.categoryId}/place/${request.params.id}`);
     },
@@ -215,3 +215,16 @@ export const placeController = {
     },
   },
 };
+
+function personalRating(place, userId) {
+  let vote = 0;
+
+  if (place.ratings.length > 0) {
+    for (let i = 0; i < place.ratings.length; i++) {
+      if (place.ratings[i].userId.toString() === userId.toString()) {
+        vote = place.ratings[i].rating;
+      }
+    }
+  }
+  return vote;
+}
