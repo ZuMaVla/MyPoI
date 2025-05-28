@@ -64,6 +64,10 @@ export async function init() {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     isSecure: isProduction,
     location: _location,
+    scope: ["profile", "email"],
+    providerParams: {
+      prompt: "select_account",
+    },
   });
 
   server.auth.default("session");
