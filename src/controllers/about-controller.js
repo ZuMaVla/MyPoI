@@ -7,27 +7,28 @@ export const aboutController = {
       let popularPlace = {};
       let discussedPlace = {};
       const places = await db.placeStore.getAllPlaces();
-      if (places.length > 0) {
-        recentPlace = places[places.length - 1];
+      const publicPlaces = places.filter((place) => !place._private); // filtering out private places
+      if (publicPlaces.length > 0) {
+        recentPlace = publicPlaces[publicPlaces.length - 1];
         let index = 0;
         let rating = 0;
-        for (let i = 0; i < places.length; i++) {
-          if (averageRating(places[i]) > rating) {
-            rating = averageRating(places[i]);
+        for (let i = 0; i < publicPlaces.length; i++) {
+          const place = averageRating(publicPlaces[i]);
+          if (place.averageRating > rating) {
+            rating = place.averageRating;
             index = i;
           }
         }
-        popularPlace = places[index];
+        popularPlace = publicPlaces[index];
         index = 0;
         let reviews = 0;
-        for (let i = 0; i < places.length; i++) {
-          if (places[i].reviews.length > reviews) {
-            reviews = places[i].reviews.length;
+        for (let i = 0; i < publicPlaces.length; i++) {
+          if (publicPlaces[i].reviews.length > reviews) {
+            reviews = publicPlaces[i].reviews.length;
             index = i;
           }
         }
-        discussedPlace = places[index];
-        console.log(discussedPlace);
+        discussedPlace = publicPlaces[index];
       }
 
       const topReviewer = getTopReviewer(places);
@@ -64,7 +65,9 @@ function averageRating(place) {
     } else {
       averageRating = 0;
     }
-    place.averageRating = averageRating;
+    place.averageRating = parseFloat(averageRating);
+  } else {
+    place.averageRating = 0;
   }
   return place;
 }
@@ -72,7 +75,6 @@ function averageRating(place) {
 function getTopReviewer(places) {
   // Create an empty "dictionary" to count reviews per userId
   const reviewCounts = {};
-
   for (const place of places) {
     for (const review of place.reviews || []) {
       const userId = review.userId.toString();
@@ -83,7 +85,6 @@ function getTopReviewer(places) {
       }
     }
   }
-
   let maxUserId = null;
   let maxCount = 0;
   // Find userId with the maximum review count
@@ -93,6 +94,5 @@ function getTopReviewer(places) {
       maxUserId = userId;
     }
   }
-
   return { id: maxUserId, count: maxCount };
 }
